@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canton-black: #06090f;
+    --canton-navy: #0c1220;
+    --canton-cyan: #00d1ff;
+    --canton-gold: #d4a017;
+    --canton-text: #e8edf5;
+    --canton-muted: #8b95a5;
+
+    --surface-elevated: #111a2b;
+    --hairline: rgba(0, 209, 255, 0.12);
+    --hairline-strong: rgba(0, 209, 255, 0.28);
+
+    --background: var(--canton-black);
+    --foreground: var(--canton-text);
+  }
+
+  * {
+    @apply border-hairline;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--canton-black);
+    color: var(--canton-text);
+    @apply font-sans antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(0, 209, 255, 0.28);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--canton-cyan);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight;
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .card {
+    background-color: var(--canton-navy);
+    border: 1px solid var(--hairline);
+    @apply rounded-2xl shadow-card;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 ease-canton;
+  }
+  .card-hover:hover {
+    border-color: var(--hairline-strong);
+    @apply shadow-glow -translate-y-0.5;
+  }
+
+  .glass {
+    background: linear-gradient(
+      180deg,
+      rgba(12, 18, 32, 0.86) 0%,
+      rgba(6, 9, 15, 0.86) 100%
+    );
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--hairline);
+  }
+
+  .text-gradient {
+    @apply bg-canton-gradient bg-clip-text text-transparent;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5
+           text-sm font-medium transition-all duration-200 ease-canton
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn text-canton-black;
+    background-color: var(--canton-cyan);
+    box-shadow: 0 0 24px -6px rgba(0, 209, 255, 0.6);
+  }
+  .btn-primary:hover {
+    background-color: #3ddaff;
+    box-shadow: 0 0 34px -4px rgba(0, 209, 255, 0.8);
+  }
+
+  .btn-ghost {
+    @apply btn text-canton-text;
+    background-color: rgba(232, 237, 245, 0.04);
+    border: 1px solid var(--hairline);
+  }
+  .btn-ghost:hover {
+    background-color: rgba(232, 237, 245, 0.09);
+    border-color: var(--hairline-strong);
+  }
+
+  .btn-gold {
+    @apply btn text-canton-black;
+    background-color: var(--canton-gold);
+  }
+  .btn-gold:hover {
+    background-color: #f0c24a;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1
+           text-xs font-medium text-canton-cyan;
+    background-color: rgba(0, 209, 255, 0.08);
+    border: 1px solid rgba(0, 209, 255, 0.22);
+  }
+
+  .grid-bg {
+    @apply bg-grid bg-grid-cell;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 40%,
+      #000 20%,
+      transparent 75%
+    );
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--hairline-strong),
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .thin-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(139, 149, 165, 0.28);
+    border-radius: 9999px;
+  }
+  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 209, 255, 0.45);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+/* Recharts overrides so tooltips/axes match the Canton palette */
+.recharts-cartesian-axis-tick text {
+  fill: var(--canton-muted);
+  font-size: 11px;
+}
+.recharts-cartesian-grid line {
+  stroke: rgba(139, 149, 165, 0.12);
+}
+.recharts-tooltip-wrapper:focus {
+  outline: none;
+}
+.recharts-surface {
+  overflow: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
