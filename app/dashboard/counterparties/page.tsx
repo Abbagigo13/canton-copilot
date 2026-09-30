@@ -16,8 +16,9 @@ export default function CounterpartiesPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-sm font-medium">Counterparties</h1>
-          <p className="text-[11px] text-canton-muted">
-            Parties you share at least one active contract with
+                    <p className="text-[11px] text-canton-muted">
+            Parties you share at least one active contract with ·{" "}
+            <span className="text-canton-muted/70">simulated overlay</span>
           </p>
         </div>
         <button className="btn-primary text-xs">

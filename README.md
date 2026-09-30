@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000 — the dashboard is at http://localhost:3000/dashboard.
+Open <http://localhost:3000> — the dashboard is at <http://localhost:3000/dashboard>.
 
 `npm install` takes 1–2 minutes (three.js and Next are the big ones). If npm
 warns about peer dependencies, it is safe to ignore; if it *errors*, run
@@ -32,15 +32,15 @@ Restart `npm run dev` after editing `.env.local`.
 
 ## What's where
 
-| Path                     | What it is                                                        |
-| ------------------------ | ----------------------------------------------------------------- |
-| `app/page.tsx`           | Landing page: 3D hero, scroll animations, features, how it works   |
-| `app/dashboard/page.tsx` | Dashboard: sidebar, header, 4 KPI cards, 2 charts, activity table  |
-| `app/api/ai/route.ts`    | Qwen endpoint with LRU+TTL cache, rate limit and token budget      |
-| `components/Hero3D.tsx`  | R3F network globe — 2,200 points, pauses when scrolled out of view |
-| `components/DashboardCard.tsx` | KPI card with count-up number and animated sparkline        |
-| `components/AIChat.tsx`  | Chat panel with pulsing "thinking" state and typewriter reveal     |
-| `lib/qwen.ts`            | Qwen client, compressed ledger context, token accounting           |
+| Path                          | What it is                                                        |
+| ----------------------------- | ----------------------------------------------------------------- |
+| `app/page.tsx`                 | Landing page: 3D hero, scroll animations, features, how it works  |
+| `app/dashboard/page.tsx`      | Dashboard: sidebar, header, 4 KPI cards, 2 charts, activity table |
+| `app/api/ai/route.ts`         | Qwen endpoint with LRU+TTL cache, rate limit and token budget     |
+| `components/Hero3D.tsx`       | R3F network globe — 2,200 points, pauses when scrolled out of view |
+| `components/DashboardCard.tsx` | KPI card with count-up number and animated sparkline              |
+| `components/AIChat.tsx`       | Chat panel with pulsing "thinking" state and typewriter reveal   |
+| `lib/qwen.ts`                  | Qwen client, compressed ledger context, token accounting         |
 
 ## Token budget
 
@@ -51,7 +51,16 @@ Restart `npm run dev` after editing `.env.local`.
 - Output is capped at 550 tokens per answer, so ~500 fresh questions fit in 500k.
 - `GET /api/ai` returns live usage, cache size and hit count.
 
+## Data sources
+
+| Data | Status | Source |
+| ---- | ------ | ------ |
+| Canton Coin price, mining rounds, DSO info | **Live** | Silvana DevNet gRPC (`lib/silvana.ts` → `/api/ledger/dso`) |
+| News | **Live** | Canton Foundation forum RSS (`/api/news`) |
+| Network-wide validator/round stats | Attempted, blocked | The public Global Synchronizer Scan API (`scan.sv-1.global.canton.network.sync.global`) returned `403` from both local and Vercel-hosted requests — likely a datacenter-IP block on their end, not something fixable client-side. An API key application to `cctools.network` for elevated access is pending. |
+| Institution-level activity (Counterparties, Assets, Contracts, Compliance, Overview KPIs) | Simulated overlay | Canton's privacy model doesn't expose per-party transaction detail publicly — only the involved parties' own nodes ever see it. This panel is illustrative of what an institution's own Canton Copilot deployment would show once connected to their participant node, clearly labeled "Simulated" in the UI. |
+
 ## Notes
 
 - Uses React 18 + Next 14 + R3F v8 deliberately; R3F v9 requires React 19.
-- All demo data is fabricated. Not affiliated with Digital Asset.
+- Not affiliated with Digital Asset.

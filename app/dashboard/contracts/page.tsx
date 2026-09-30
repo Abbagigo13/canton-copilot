@@ -18,8 +18,9 @@ export default function ContractsPage() {
     <>
       <div className="mb-6">
         <h1 className="text-sm font-medium">Contracts</h1>
-        <p className="text-[11px] text-canton-muted">
-          Active Daml contracts visible to your parties
+                <p className="text-[11px] text-canton-muted">
+          Active Daml contracts visible to your parties ·{" "}
+          <span className="text-canton-muted/70">simulated overlay</span>
         </p>
       </div>
 

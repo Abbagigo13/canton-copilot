@@ -4,18 +4,59 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Newspaper, ExternalLink, Filter } from "lucide-react";
-import { news } from "@/lib/mockData";
 import { useAIContext } from "@/lib/aiContext";
 
 const CATEGORIES = ["All", "Network", "Governance", "Ecosystem"];
 
+type NewsItem = {
+  id: string;
+  title: string;
+  body: string;
+  time: string;
+  link: string;
+  category: string;
+  source: string;
+};
+
+function categorize(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("governance") || t.includes("vote") || t.includes("cip")) return "Governance";
+  if (t.includes("validator") || t.includes(" sv ") || t.includes("synchronizer")) return "Network";
+  return "Ecosystem";
+}
+
 export default function NewsPage() {
   const [filter, setFilter] = useState("All");
+  const [news, setNews] = useState<NewsItem[]>([]);
   const { setPageContext } = useAIContext();
 
   useEffect(() => {
+    let cancelled = false;
+    fetch("/api/news")
+      .then((res) => res.json())
+      .then((json) => {
+        if (cancelled || !json.live) return;
+        setNews(
+          json.items.map((it: any, i: number) => ({
+            id: it.link || `n-${i}`,
+            title: it.title,
+            body: it.body,
+            time: it.time,
+            link: it.link,
+            category: categorize(it.title),
+            source: "Canton Forum",
+          }))
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     setPageContext("News", { news });
-  }, [setPageContext]);
+  }, [news, setPageContext]);
 
   const filtered = filter === "All" ? news : news.filter((n) => n.category === filter);
 
@@ -71,10 +112,16 @@ export default function NewsPage() {
               <span className="text-[10px] text-canton-muted">
                 via <span className="text-canton-text">{item.source}</span>
               </span>
-              <button className="inline-flex items-center gap-1 text-[10px] text-canton-cyan transition-opacity hover:opacity-80">
+
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[10px] text-canton-cyan transition-opacity hover:opacity-80"
+              >
                 Read more
                 <ExternalLink className="h-2.5 w-2.5" />
-              </button>
+              </a>
             </div>
           </motion.article>
         ))}

@@ -30,8 +30,9 @@ export default function CompliancePage() {
     <>
       <div className="mb-6">
         <h1 className="text-sm font-medium">Compliance</h1>
-        <p className="text-[11px] text-canton-muted">
-          Risk signals across your visible contracts
+                <p className="text-[11px] text-canton-muted">
+          Risk signals across your visible contracts ·{" "}
+          <span className="text-canton-muted/70">simulated overlay</span>
         </p>
       </div>
 

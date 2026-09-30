@@ -16,8 +16,9 @@ export default function AssetsPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-sm font-medium">Assets</h1>
-          <p className="text-[11px] text-canton-muted">
-            Tokenized instruments visible to your parties
+                    <p className="text-[11px] text-canton-muted">
+            Tokenized instruments visible to your parties ·{" "}
+            <span className="text-canton-muted/70">simulated overlay</span>
           </p>
         </div>
         <button className="btn-primary text-xs">

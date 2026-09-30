@@ -42,9 +42,12 @@ export default function LiveIndicator({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="badge hidden sm:inline-flex">
-        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-glow" />
-        Live
+            <span
+        className="badge hidden sm:inline-flex"
+        title="Institution and transaction detail on this page is a simulated overlay — Canton's privacy model doesn't expose this level of detail publicly. The Canton Coin panel and News tab are real live data."
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-canton-gold" />
+        Simulated
       </span>
 
       <button

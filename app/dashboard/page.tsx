@@ -112,10 +112,11 @@ export default function OverviewPage() {
     <>
       {/* ---------- header ---------- */}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-        <div>
+                <div>
           <h1 className="text-sm font-medium">Overview</h1>
           <p className="text-[11px] text-canton-muted">
-            Global Synchronizer · last 7 days
+            Global Synchronizer · last 7 days ·{" "}
+            <span className="text-canton-muted/70">simulated institutional overlay</span>
           </p>
         </div>
 
