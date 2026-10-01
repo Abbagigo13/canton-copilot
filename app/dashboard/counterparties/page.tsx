@@ -1,16 +1,30 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Plus, TrendingUp, Users } from "lucide-react";
+import { Plus, ShieldCheck, ShieldAlert, TrendingUp, Users } from "lucide-react";
 import { counterparties } from "@/lib/mockData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAIContext } from "@/lib/aiContext";
 
 export default function CounterpartiesPage() {
-      const { setPageContext } = useAIContext();
+        const { setPageContext } = useAIContext();
   useEffect(() => {
     setPageContext("Counterparties", { counterparties });
   }, [setPageContext]);
+
+  const [screening, setScreening] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    const names = counterparties.map((c) => c.name).join(",");
+    fetch(`/api/compliance/screen?names=${encodeURIComponent(names)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.live) return;
+        const map: Record<string, boolean> = {};
+        d.results.forEach((r: any) => (map[r.name] = r.hit));
+        setScreening(map);
+      })
+      .catch(() => {});
+  }, []);
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
@@ -65,15 +79,32 @@ export default function CounterpartiesPage() {
                   <p className="text-[11px] text-canton-muted">since {c.since}</p>
                 </div>
               </div>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                  c.status === "active"
-                    ? "bg-emerald-500/10 text-emerald-400"
-                    : "bg-canton-gold/12 text-canton-gold"
-                }`}
-              >
-                {c.status}
-              </span>
+                            <div className="flex flex-col items-end gap-1">
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    c.status === "active"
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : "bg-canton-gold/12 text-canton-gold"
+                  }`}
+                >
+                  {c.status}
+                </span>
+                {c.name in screening && (
+                  <span
+                    className={`inline-flex items-center gap-1 text-[10px] ${
+                      screening[c.name] ? "text-red-400" : "text-canton-muted"
+                    }`}
+                    title="Live check against the US Treasury OFAC SDN list"
+                  >
+                    {screening[c.name] ? (
+                      <ShieldAlert className="h-2.5 w-2.5" />
+                    ) : (
+                      <ShieldCheck className="h-2.5 w-2.5" />
+                    )}
+                    {screening[c.name] ? "Sanctions hit" : "OFAC clear"}
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3">

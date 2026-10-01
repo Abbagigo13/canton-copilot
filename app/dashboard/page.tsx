@@ -19,6 +19,7 @@ import {
   Activity,
   ArrowUpRight,
   CircleDollarSign,
+  Newspaper,
   Search,
   ShieldCheck,
   Users,
@@ -99,7 +100,7 @@ export default function OverviewPage() {
 
   const { setPageContext } = useAIContext();
 
-  useEffect(() => {
+    useEffect(() => {
     setPageContext("Overview", {
       kpis: dashboardMetrics.kpis,
       volumeHistory: dashboardMetrics.volumeHistory,
@@ -107,6 +108,55 @@ export default function OverviewPage() {
       recentActivity: dashboardMetrics.recentActivity,
     });
   }, [setPageContext, dashboardMetrics]);
+
+  const [realKpis, setRealKpis] = useState<{
+    currentRound: number | null;
+    entriesScanned: number | null;
+    newsCount: number | null;
+    clearCount: number | null;
+    totalScreened: number | null;
+  }>({
+    currentRound: null,
+    entriesScanned: null,
+    newsCount: null,
+    clearCount: null,
+    totalScreened: null,
+  });
+
+  useEffect(() => {
+    fetch("/api/ledger/dso")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.live) return;
+        setRealKpis((prev) => ({
+          ...prev,
+          currentRound: parseInt(d.currentRound, 10) || null,
+        }));
+      })
+      .catch(() => {});
+
+    fetch("/api/news")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.live) return;
+        setRealKpis((prev) => ({ ...prev, newsCount: d.items.length }));
+      })
+      .catch(() => {});
+
+    const names = require("@/lib/mockData").counterparties.map((c: any) => c.name).join(",");
+    fetch(`/api/compliance/screen?names=${encodeURIComponent(names)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.live) return;
+        setRealKpis((prev) => ({
+          ...prev,
+          entriesScanned: d.totalEntriesScanned,
+          clearCount: d.results.filter((r: any) => !r.hit).length,
+          totalScreened: d.results.length,
+        }));
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -153,63 +203,39 @@ export default function OverviewPage() {
           );
         }}
       />
-
-      {/* ---------- KPI cards ---------- */}
+      {/* ---------- KPI cards (real data) ---------- */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DashboardCard
           index={0}
-          label="Settled volume"
-          value={dashboardMetrics.kpis.settledVolume.value}
-          prefix="$"
-          suffix="M"
-          decimals={1}
-          delta={dashboardMetrics.kpis.settledVolume.change}
-          icon={CircleDollarSign}
-          sparkline={dashboardMetrics.volumeHistory.map((v) => v.volume)}
+          label="Current mining round"
+          value={realKpis.currentRound ?? 0}
+          icon={Activity}
+          deltaLabel="Silvana DevNet · live"
         />
         <DashboardCard
           index={1}
-          label="Transactions"
-          value={dashboardMetrics.kpis.transactions.value}
-          delta={dashboardMetrics.kpis.transactions.change}
-          icon={Activity}
-          sparkline={dashboardMetrics.volumeHistory.map((v) => v.transactions)}
+          label="OFAC entries scanned"
+          value={realKpis.entriesScanned ?? 0}
+          format="compact"
+          icon={ShieldCheck}
+          tone="gold"
+          deltaLabel="US Treasury SDN list · live"
         />
         <DashboardCard
           index={2}
-          label="Active parties"
-          value={dashboardMetrics.kpis.activeParties.value}
-          delta={dashboardMetrics.kpis.activeParties.change}
-          icon={Users}
-          tone="gold"
-          sparkline={[
-            980,
-            1024,
-            1090,
-            1102,
-            1188,
-            1240,
-            dashboardMetrics.kpis.activeParties.value,
-          ]}
+          label="Forum posts tracked"
+          value={realKpis.newsCount ?? 0}
+          icon={Newspaper}
+          deltaLabel="Canton Forum · live"
         />
         <DashboardCard
           index={3}
-          label="Settlement rate"
-          value={dashboardMetrics.kpis.settlementRate.value}
-          suffix="%"
-          decimals={1}
-          format="percent"
-          delta={dashboardMetrics.kpis.settlementRate.change}
-          icon={ShieldCheck}
-          sparkline={[
-            99.8,
-            99.7,
-            99.6,
-            99.4,
-            99.1,
-            99.3,
-            dashboardMetrics.kpis.settlementRate.value,
-          ]}
+          label="Counterparties clear"
+          value={realKpis.clearCount ?? 0}
+          suffix={realKpis.totalScreened ? ` / ${realKpis.totalScreened}` : ""}
+          icon={Users}
+          tone="gold"
+          deltaLabel="sanctions screening · live"
         />
       </div>
 

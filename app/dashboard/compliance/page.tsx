@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, ShieldAlert, ShieldCheck } from "lucide-react";
-import { complianceAlerts } from "@/lib/mockData";
-import { useEffect, useMemo } from "react";
 import { useAIContext } from "@/lib/aiContext";
+import { complianceAlerts, counterparties } from "@/lib/mockData";
+import { useEffect, useMemo, useState } from "react";
 
 const SEVERITY_STYLES = {
   high: { icon: ShieldAlert, bg: "bg-red-500/10", text: "text-red-400", ring: "ring-red-500/25" },
@@ -18,13 +18,27 @@ export default function CompliancePage() {
     medium: complianceAlerts.filter((a) => a.severity === "medium").length,
     low: complianceAlerts.filter((a) => a.severity === "low").length,
   }), []);
-  const { setPageContext } = useAIContext();
+    const { setPageContext } = useAIContext();
   useEffect(() => {
     setPageContext("Compliance", {
       alerts: complianceAlerts,
       counts,
     });
   }, [setPageContext, counts]);
+
+  const [screening, setScreening] = useState<{
+    live: boolean;
+    totalEntriesScanned?: number;
+    results?: { name: string; hit: boolean }[];
+  } | null>(null);
+
+  useEffect(() => {
+    const names = counterparties.map((c) => c.name).join(",");
+    fetch(`/api/compliance/screen?names=${encodeURIComponent(names)}`)
+      .then((res) => res.json())
+      .then(setScreening)
+      .catch(() => setScreening(null));
+  }, []);
 
   return (
     <>
@@ -35,6 +49,30 @@ export default function CompliancePage() {
           <span className="text-canton-muted/70">simulated overlay</span>
         </p>
       </div>
+
+            {screening?.live && (
+        <div className="card p-4 mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-canton-cyan" />
+            <p className="text-xs">
+              {screening.results?.filter((r) => r.hit).length ? (
+                <span className="text-red-400">
+                  {screening.results.filter((r) => r.hit).length} of {screening.results.length}{" "}
+                  counterparties flagged against the OFAC sanctions list
+                </span>
+              ) : (
+                <>
+                  All {screening.results?.length} counterparties clear against the{" "}
+                  <span className="text-canton-text">US Treasury OFAC SDN list</span>
+                </>
+              )}
+            </p>
+          </div>
+          <span className="text-[10px] text-canton-muted">
+            {screening.totalEntriesScanned?.toLocaleString()} entries scanned · live
+          </span>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
         <div className="card p-4">
