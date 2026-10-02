@@ -35,9 +35,12 @@ export async function GET(req: Request) {
 
     const results = names.map((name) => {
       const needle = name.toUpperCase();
-      const hitLine = lines.find((line) => {
+            const hitLine = lines.find((line) => {
         const sdnName = (parseCsvLine(line)[1] || "").toUpperCase().trim();
-        return sdnName && (sdnName.includes(needle) || needle.includes(sdnName));
+        // Only match when the OFAC entry's full name appears in the counterparty
+        // name (not the reverse) — the reverse direction false-positives on short
+        // or generic SDN names.
+        return sdnName.length > 6 && sdnName.includes(needle);
       });
       const fields = hitLine ? parseCsvLine(hitLine) : null;
       return {

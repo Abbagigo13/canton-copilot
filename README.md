@@ -32,14 +32,14 @@ Restart `npm run dev` after editing `.env.local`.
 
 ## What's where
 
-| Path                          | What it is                                                        |
-| ----------------------------- | ----------------------------------------------------------------- |
+| Path                           | What it is                                                        |
+| ------------------------------ | ----------------------------------------------------------------- |
 | `app/page.tsx`                 | Landing page: 3D hero, scroll animations, features, how it works  |
-| `app/dashboard/page.tsx`      | Dashboard: sidebar, header, 4 KPI cards, 2 charts, activity table |
-| `app/api/ai/route.ts`         | Qwen endpoint with LRU+TTL cache, rate limit and token budget     |
-| `components/Hero3D.tsx`       | R3F network globe — 2,200 points, pauses when scrolled out of view |
+| `app/dashboard/page.tsx`       | Dashboard: sidebar, header, 4 KPI cards, 2 charts, activity table |
+| `app/api/ai/route.ts`          | Qwen endpoint with LRU+TTL cache, rate limit and token budget     |
+| `components/Hero3D.tsx`        | R3F network globe — 2,200 points, pauses when scrolled out of view |
 | `components/DashboardCard.tsx` | KPI card with count-up number and animated sparkline              |
-| `components/AIChat.tsx`       | Chat panel with pulsing "thinking" state and typewriter reveal   |
+| `components/AIChat.tsx`        | Chat panel with pulsing "thinking" state and typewriter reveal   |
 | `lib/qwen.ts`                  | Qwen client, compressed ledger context, token accounting         |
 
 ## Token budget
@@ -58,7 +58,11 @@ Restart `npm run dev` after editing `.env.local`.
 | Canton Coin price, mining rounds, DSO info | **Live** | Silvana DevNet gRPC (`lib/silvana.ts` → `/api/ledger/dso`) |
 | News | **Live** | Canton Foundation forum RSS (`/api/news`) |
 | Network-wide validator/round stats | Attempted, blocked | The public Global Synchronizer Scan API (`scan.sv-1.global.canton.network.sync.global`) returned `403` from both local and Vercel-hosted requests — likely a datacenter-IP block on their end, not something fixable client-side. An API key application to `cctools.network` for elevated access is pending. |
-| Institution-level activity (Counterparties, Assets, Contracts, Compliance, Overview KPIs) | Simulated overlay | Canton's privacy model doesn't expose per-party transaction detail publicly — only the involved parties' own nodes ever see it. This panel is illustrative of what an institution's own Canton Copilot deployment would show once connected to their participant node, clearly labeled "Simulated" in the UI. |
+| Institution-level activity (Counterparties, Contracts, Compliance alerts, Overview KPIs) | Simulated overlay | Canton's privacy model doesn't expose per-party transaction detail publicly — only the involved parties' own nodes ever see it. This panel is illustrative of what an institution's own Canton Copilot deployment would show once connected to their participant node, clearly labeled "Simulated" in the UI. |
+| Assets — Canton Coin card | **Live** | Silvana DevNet gRPC (`/api/ledger/dso`), same source as the CC price panel. The rest of the Assets tab (tokenized bonds, registries) is simulated. |
+| Transactions — top rows | **Live** | Mining round issuance events from Silvana DevNet (`/api/ledger/dso` → `issuingMiningRounds`), real round numbers and reward amounts. Rows below are simulated institutional settlements. |
+
+We applied for elevated Canton API access (`cctools.network`) to cover the remaining institutional-level data, pending as of writing. Everything above reflects what's live without that key — the dashboard was built to degrade honestly rather than wait.
 
 ## Notes
 

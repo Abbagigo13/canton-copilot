@@ -1,16 +1,26 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Layers, Plus, Wallet } from "lucide-react";
+import { Coins, Layers, Plus, Wallet } from "lucide-react";
 import { assets } from "@/lib/mockData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAIContext } from "@/lib/aiContext";
 
 export default function AssetsPage() {
-      const { setPageContext } = useAIContext();
+        const { setPageContext } = useAIContext();
   useEffect(() => {
     setPageContext("Assets", { assets });
   }, [setPageContext]);
+
+  const [cc, setCc] = useState<{ ccUsdRate: number; currentRound: string } | null>(null);
+  useEffect(() => {
+    fetch("/api/ledger/dso")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.live) setCc({ ccUsdRate: d.ccUsdRate, currentRound: d.currentRound });
+      })
+      .catch(() => {});
+  }, []);
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
@@ -44,7 +54,40 @@ export default function AssetsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {cc && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="card card-hover p-5 ring-1 ring-canton-cyan/30"
+          >
+            <div className="flex items-start justify-between">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-canton-cyan/10 ring-1 ring-canton-cyan/25">
+                <Coins className="h-5 w-5 text-canton-cyan" />
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                live
+              </span>
+            </div>
+            <h3 className="mt-4 text-sm font-medium">Canton Coin</h3>
+            <p className="text-[11px] text-canton-muted">Native network asset · Silvana DevNet</p>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-canton-muted">CC / USD</p>
+                <p className="tabular text-sm font-semibold text-canton-cyan">${cc.ccUsdRate.toFixed(4)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-canton-muted">Round</p>
+                <p className="tabular text-sm font-semibold">#{cc.currentRound}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between border-t border-hairline pt-3 text-[11px] text-canton-muted">
+              <span>Only real asset on this page</span>
+              <span>rest simulated</span>
+            </div>
+          </motion.div>
+        )}
         {assets.map((a, i) => (
           <motion.div
             key={a.id}

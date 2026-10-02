@@ -3,23 +3,36 @@
 import { motion } from "framer-motion";
 import { Activity, ArrowUpRight, CircleDollarSign, Filter } from "lucide-react";
 import { dashboardMetrics } from "@/lib/mockData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAIContext } from "@/lib/aiContext";
 
 export default function TransactionsPage() {
   const transactions = dashboardMetrics.recentActivity;
 
-  const { setPageContext } = useAIContext();
+    const { setPageContext } = useAIContext();
   useEffect(() => {
     setPageContext("Transactions", { transactions });
   }, [setPageContext, transactions]);
+
+  const [liveRounds, setLiveRounds] = useState<any[]>([]);
+  useEffect(() => {
+    fetch("/api/ledger/dso")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.live) setLiveRounds(d.issuingMiningRounds || []);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-sm font-medium">Transactions</h1>
-          <p className="text-[11px] text-canton-muted">All ledger activity across your parties</p>
+                    <p className="text-[11px] text-canton-muted">
+            All ledger activity across your parties ·{" "}
+            <span className="text-canton-muted/70">top rows live from Silvana DevNet, rest simulated</span>
+          </p>
         </div>
         <button className="btn-ghost text-xs">
           <Filter className="h-3.5 w-3.5" />
@@ -53,7 +66,28 @@ export default function TransactionsPage() {
               <th className="px-5 py-3 text-right font-medium">Time</th>
             </tr>
           </thead>
-          <tbody>
+                    <tbody>
+            {liveRounds.map((r, i) => (
+              <motion.tr
+                key={`live-${r.round}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: i * 0.04 }}
+                className="border-t border-hairline bg-canton-cyan/[0.03] hover:bg-white/[0.02]"
+              >
+                <td className="px-5 py-3.5 font-medium">Silvana DevNet</td>
+                <td className="px-5 py-3.5 text-canton-muted">Mining round #{r.round} issuance</td>
+                <td className="px-5 py-3.5 text-right tabular">{r.featuredReward} CC</td>
+                <td className="px-5 py-3.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-canton-cyan/10 px-2.5 py-1 text-[11px] font-medium text-canton-cyan">
+                    live
+                  </span>
+                </td>
+                <td className="px-5 py-3.5 text-right text-canton-muted">
+                  {r.opensAt ? new Date(r.opensAt).toLocaleTimeString() : "—"}
+                </td>
+              </motion.tr>
+            ))}
             {transactions.map((row, i) => (
               <motion.tr
                 key={row.party + i}
