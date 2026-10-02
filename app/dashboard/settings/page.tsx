@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, Link2, Save, Server, Shield, Wallet } from "lucide-react";
-import { useEffect } from "react";
+import { Check, Globe, Link2, Save, Server, Shield, Wallet } from "lucide-react";
 import { useAIContext } from "@/lib/aiContext";
 
 export default function SettingsPage() {
@@ -14,10 +13,25 @@ export default function SettingsPage() {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
-    const { setPageContext } = useAIContext();
+        const { setPageContext } = useAIContext();
   useEffect(() => {
     setPageContext("Settings", { node: "participant-1.canton", status: "connected" });
   }, [setPageContext]);
+
+  const [serviceInfo, setServiceInfo] = useState<{
+    providerId: string;
+    version: string;
+    networkId: string;
+    synchronizerId: string;
+  } | null>(null);
+  useEffect(() => {
+    fetch("/api/ledger/service-info")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.live) setServiceInfo(d);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -89,7 +103,59 @@ export default function SettingsPage() {
               />
             </label>
           </div>
-        </section>
+                </section>
+
+        {/* Real Silvana DevNet connection */}
+        {serviceInfo && (
+          <section className="card p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-canton-cyan/10 ring-1 ring-canton-cyan/25">
+                  <Globe className="h-5 w-5 text-canton-cyan" />
+                </span>
+                <div>
+                  <h2 className="text-sm font-medium">Silvana DevNet connection</h2>
+                  <p className="text-[11px] text-canton-muted">
+                    Real gRPC connection backing the Canton Coin and mining round data
+                  </p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-glow" />
+                Live
+              </span>
+            </div>
+
+            <div className="mt-5 space-y-2 text-xs">
+              <div className="flex items-center justify-between rounded-lg bg-canton-black/50 px-3 py-2">
+                <span className="text-canton-muted">Provider</span>
+                <span className="font-mono text-canton-text">{serviceInfo.providerId}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-lg bg-canton-black/50 px-3 py-2">
+                <span className="text-canton-muted">API version</span>
+                <span className="font-mono text-canton-text">{serviceInfo.version}</span>
+              </div>
+              <div
+                className="flex items-center justify-between rounded-lg bg-canton-black/50 px-3 py-2"
+                title={serviceInfo.networkId}
+              >
+                <span className="text-canton-muted">Network</span>
+                <span className="truncate font-mono text-canton-text max-w-[60%]">
+                  {serviceInfo.networkId.slice(0, 24)}…
+                </span>
+              </div>
+              <div
+                className="flex items-center justify-between rounded-lg bg-canton-black/50 px-3 py-2"
+                title={serviceInfo.synchronizerId}
+              >
+                <span className="text-canton-muted">Synchronizer</span>
+                <span className="truncate font-mono text-canton-text max-w-[60%]">
+                  {serviceInfo.synchronizerId.slice(0, 24)}…
+                </span>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Privacy scope */}
         <section className="card p-6">
@@ -130,7 +196,7 @@ export default function SettingsPage() {
             <div>
               <h2 className="text-sm font-medium">AI token budget</h2>
               <p className="text-[11px] text-canton-muted">
-                Qwen · 500K tokens per season
+                Qwen · 5K tokens per season
               </p>
             </div>
           </div>
@@ -180,7 +246,7 @@ export default function SettingsPage() {
         {/* Footer info */}
         <div className="flex items-center justify-center gap-2 pt-2 text-[11px] text-canton-muted">
           <Link2 className="h-3 w-3" />
-          Connection is simulated in this demo. Bring your own node to go live.
+                      This participant-node form is simulated — connect your own Canton node to go live. See the Silvana DevNet card above for a connection that is genuinely live right now.
         </div>
       </div>
     </>
