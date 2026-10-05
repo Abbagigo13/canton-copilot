@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Newspaper } from "lucide-react";
+import { GraduationCap, User } from "lucide-react";
+import { Compass } from "lucide-react";
 import {
   Activity,
   FileText,
@@ -26,6 +28,9 @@ const NAV: { label: string; icon: LucideIcon; href: string; badge?: string }[] =
   { label: "Compliance", icon: ShieldCheck, href: "/dashboard/compliance" },
   { label: "Contracts", icon: FileText, href: "/dashboard/contracts" },
   { label: "News", icon: Newspaper, href: "/dashboard/news" },
+  { label: "Learn", icon: GraduationCap, href: "/dashboard/learn" },
+  { label: "Profile", icon: User, href: "/dashboard/profile" },
+  { label: "Ecosystem", icon: Compass, href: "/dashboard/ecosystem" },
 ];
 
 export default function DashboardSidebar() {
