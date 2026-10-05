@@ -25,8 +25,8 @@ export default function EcosystemPage() {
   }, [category, query]);
 
   useEffect(() => {
-    setPageContext("Ecosystem", { projects, filtered });
-  }, [setPageContext, filtered]);
+  setPageContext("Ecosystem", { projects, filtered });
+}, [setPageContext, filtered]);
 
   return (
     <>
@@ -148,7 +148,15 @@ export default function EcosystemPage() {
                 onClick={() =>
                   window.dispatchEvent(
                     new CustomEvent("copilot-action", {
-                      detail: `Tell me everything you know about "${p.name}" on Canton Network. What does it do, and how does it use Canton's privacy features?`,
+                      detail: `Explain the Canton Network project "${p.name}". Here's what we know about it:
+- Tagline: ${p.tagline}
+- Category: ${p.category}
+- Tags: ${p.tags.join(", ")}
+- Community votes: ${p.votes}
+- Hearts: ${p.hearts}
+${p.tvl ? `- TVL: ${p.tvl}` : ""}
+
+Explain what it does, why it matters on Canton, and how it uses Canton's privacy features.`,
                     })
                   )
                 }

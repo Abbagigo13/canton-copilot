@@ -127,7 +127,12 @@ export default function LessonPage() {
             onClick={() =>
               window.dispatchEvent(
                 new CustomEvent("copilot-action", {
-                  detail: `Explain the key concept of "${lesson.title}" in simple terms and give me one practical example.`,
+                  detail: `You are an AI tutor for the lesson "${lesson.title}" (${lesson.level} level).
+
+Lesson content:
+${lesson.sections.map((s) => `${s.heading}: ${s.body}`).join("\n\n")}
+
+Explain the key concept in simple terms and give me one practical example a Canton developer could use today.`,
                 })
               )
             }
