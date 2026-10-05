@@ -1,15 +1,50 @@
 # Canton Copilot
 
-AI intelligence layer for the Canton Network. Built for HackCanton Season 3.
+> The AI layer for the Canton Network — an analytics copilot that reads your scoped ledger and answers in plain English.
 
-Next.js 14 (App Router) · TypeScript · Tailwind · React Three Fiber · Framer Motion · Recharts · Qwen
+**Live demo:** https://canton-copilot.vercel.app/dashboard
+**Demo video:** [PASTE YOUR LOOM/YOUTUBE LINK]
+**Submission:** HackCanton Season 3 · Track 4 (Data, Analytics & Ecosystem Dashboards)
 
-## Run it
+---
+
+## Why Canton?
+
+Canton is the only blockchain where **privacy is a ledger-level invariant** — not an application-layer promise. Every party sees only the contracts they are authorized to see, enforced by the protocol itself.
+
+This is Canton's greatest strength. It's also why there's no block explorer, no shared index, and no way for an institutional participant to see their own counterparty exposure in real time. Daml queries are a specialist skill most treasury and compliance staff will never learn.
+
+**Canton Copilot closes that gap.** It's an AI that inherits the caller's party rights, reads what the participant node is authorized to see, and answers operational questions in plain English — without leaking anything outside the visibility scope.
+
+On any other chain, this product couldn't exist. On Canton, it has to exist.
+
+---
+
+## What It Does
+
+- **Live Canton data** — CC/USD rate, mining rounds, DSO state streaming from Silvana's DevNet gRPC endpoint (`orderbook-devnet.silvana.dev:443`)
+- **AI Copilot on every page** — Qwen-powered, page-aware, streaming responses, token-efficient caching
+- **8 dashboard pages** — Overview, Transactions, Counterparties, Assets, Copilot, Compliance, Contracts, News
+- **Ecosystem directory** — 12 Canton projects with category filters and per-project AI queries
+- **Learn & Earn** — 3 lesson paths with quizzes, XP, and badges stored in localStorage
+- **Anomaly detection** — flags counterparties >2σ off baseline with AI-generated investigations
+- **Command palette (⌘K)** — navigate anywhere or fire AI actions from one keystroke
+- **Grofty wallet gate** — 5 free AI queries, then 1 CC payment to unlock unlimited
+- **Transaction drawer** — click any activity row for full Daml payload + "Ask Copilot"
+
+## Tech Stack
+
+- **Frontend:** Next.js 14, TypeScript, Tailwind CSS, React Three Fiber, Framer Motion, Recharts
+- **AI:** Qwen (Alibaba DashScope, Singapore endpoint)
+- **Live data:** gRPC via `@grpc/grpc-js`, Silvana DevNet
+- **Wallet:** Grofty dApp SDK (CIP-0103)
+
+## Run Locally
 
 ```bash
 npm install
+echo "DASHSCOPE_API_KEY=sk-your-key" > .env.local
 npm run dev
-```
 
 Open <http://localhost:3000> — the dashboard is at <http://localhost:3000/dashboard>.
 
