@@ -132,11 +132,33 @@ export default function ContractsPage() {
                           template: {c.template}
                         </span>
                         <div className="flex items-center gap-2">
-                          <button className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-canton-muted hover:text-canton-text">
+                          <button
+                            onClick={() => navigator.clipboard.writeText(c.id)}
+                            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-canton-muted hover:text-canton-text"
+                          >
                             <Copy className="h-3 w-3" />
                             Copy ID
                           </button>
-                          <button className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-canton-cyan hover:opacity-80">
+                          <button
+                            onClick={() =>
+                              window.dispatchEvent(
+                                new CustomEvent("copilot-action", {
+                                  detail: `Explain this Daml contract on the Canton Network.
+
+Contract data:
+- Contract ID: ${c.id}
+- Template: ${c.template}
+- Status: ${c.status}
+- Created: ${c.created}
+- Parties: ${c.parties.join(", ")}
+- Payload: ${JSON.stringify(c.payload)}
+
+Explain in plain English: what this contract does, who has visibility over it (signatories and observers), and what would trigger its archival or settlement.`,
+                                })
+                              )
+                            }
+                            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-canton-cyan hover:opacity-80"
+                          >
                             <ExternalLink className="h-3 w-3" />
                             Ask Copilot
                           </button>

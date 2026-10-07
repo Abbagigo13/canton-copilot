@@ -130,9 +130,28 @@ export default function CompliancePage() {
                       <CheckCircle2 className="h-3 w-3" />
                       AI-assisted triage ready
                     </span>
-                    <button className="text-[11px] font-medium text-canton-cyan hover:opacity-80">
-                      {a.action} →
-                    </button>
+                    <button
+  onClick={() =>
+    window.dispatchEvent(
+      new CustomEvent("copilot-action", {
+        detail: `Analyze this compliance alert on the Canton Network.
+
+Alert details:
+- ID: ${a.id}
+- Severity: ${a.severity}
+- Party: ${a.party}
+- Issue: ${a.issue}
+- Detail: ${a.detail}
+- Time: ${a.time}
+
+Explain what likely caused this, whether it's a systemic risk or isolated event, and what the operator should do next — including which team should be looped in.`,
+      })
+    )
+  }
+  className="text-[11px] font-medium text-canton-cyan hover:opacity-80"
+>
+  {a.action} →
+</button>
                   </div>
                 </div>
               </div>
